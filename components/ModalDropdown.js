@@ -309,7 +309,10 @@ export default class ModalDropdown extends Component {
     const key = `row_${rowID}`;
     const highlighted = rowID == selectedIndex;
     const row = !renderRow ?
-      (<Text style={[
+      (<Text  
+       numberOfLines={1},
+       ellipsizeMode={'tail'}
+       style={[
         styles.rowText,
         dropdownTextStyle,
         highlighted && styles.highlightedRowText,
