@@ -1,35 +1,20 @@
 {
   "name": "react-native-modal-dropdown",
-  "version": "0.6.2",
+  "version": "1.0.1",
   "description": "A react-native dropdown component for both iOS and Android.",
-  "keywords": [
-    "react",
-    "react-component",
-    "react-native",
-    "react-native-component",
-    "ios",
-    "android",
-    "modal",
-    "dropdown",
-    "picker",
-    "select",
-    "selector",
-    "option"
-  ],
-  "homepage": "https://github.com/sohobloo/react-native-modal-dropdown",
+  "homepage": "https://github.com/BachirKhiati/react-native-modal-dropdown",
   "bugs": {
-    "url": "https://github.com/sohobloo/react-native-modal-dropdown/issues",
-    "email": "sohobloo@live.cn"
+    "url": "https://github.com/BachirKhiati/react-native-modal-dropdown/issues",
+    "email": "bachir.khiati@gmail.com"
   },
-  "license": "MIT",
-  "author": "sohobloo <sohobloo@live.cn> (https://github.com/sohobloo)",
+  "author": "Bachir Khiati <bachir.khiati@gmail.com> (https://github.com/BachirKhiati)",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sohobloo/react-native-modal-dropdown.git"
+    "url": "https://github.com/BachirKhiati/react-native-modal-dropdown.git"
   },
   "dependencies": {
-    "prop-types": "^15.6.0"
+    "prop-types": "^15.7.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
