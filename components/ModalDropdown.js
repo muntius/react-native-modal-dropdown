@@ -1,7 +1,3 @@
-/**
- * Created by sohobloo on 16/9/13.
- */
-
 'use strict';
 
 import React, {
@@ -13,7 +9,7 @@ import {
   Dimensions,
   View,
   Text,
-  ListView,
+  FlatList,
   TouchableWithoutFeedback,
   TouchableNativeFeedback,
   TouchableOpacity,
@@ -21,7 +17,7 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
-
+import Reactotron from 'reactotron-react-native'
 import PropTypes from 'prop-types';
 
 const TOUCHABLE_ELEMENTS = [
@@ -78,6 +74,8 @@ export default class ModalDropdown extends Component {
     this._buttonFrame = null;
     this._nextValue = null;
     this._nextIndex = null;
+    this.renderItem = this._renderItem.bind( this )
+
 
     this.state = {
       accessible: !!props.accessible,
@@ -282,109 +280,55 @@ export default class ModalDropdown extends Component {
   }
 
   _renderDropdown() {
-    const {scrollEnabled, renderSeparator, showsVerticalScrollIndicator, keyboardShouldPersistTaps} = this.props;
+    const {scrollEnabled, options, renderSeparator, showsVerticalScrollIndicator, keyboardShouldPersistTaps} = this.props;
     return (
-      <ListView scrollEnabled={scrollEnabled}
+      <FlatList scrollEnabled={scrollEnabled}
                 style={styles.list}
-                dataSource={this._dataSource}
-                renderRow={this._renderRow}
+                data={options}
+                keyExtractor={(item, index) => 'dropDwon'+index}
+                renderItem={this.renderItem}
                 renderSeparator={renderSeparator || this._renderSeparator}
                 automaticallyAdjustContentInsets={false}
                 showsVerticalScrollIndicator={showsVerticalScrollIndicator}
                 keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+                extraData={this.state.selectedIndex}
       />
     );
   }
 
-  get _dataSource() {
-    const {options} = this.props;
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
-    });
-    return ds.cloneWithRows(options);
-  }
 
-  _renderRow = (rowData, sectionID, rowID, highlightRow) => {
+  _renderItem( {item, index} ) {
     const {renderRow, dropdownTextStyle, dropdownTextHighlightStyle, accessible} = this.props;
     const {selectedIndex} = this.state;
-    const key = `row_${rowID}`;
-    const highlighted = rowID == selectedIndex;
-    const row = !renderRow ?
-      (<Text  
-       numberOfLines={1}
-       ellipsizeMode={'tail'}
-       style={[
-        styles.rowText,
-        dropdownTextStyle,
-        highlighted && styles.highlightedRowText,
-        highlighted && dropdownTextHighlightStyle
-      ]}
-      >
-        {rowData}
-      </Text>) :
-      renderRow(rowData, rowID, highlighted);
-    const preservedProps = {
-      key,
-      accessible,
-      onPress: () => this._onRowPress(rowData, sectionID, rowID, highlightRow),
-    };
-    if (TOUCHABLE_ELEMENTS.find(name => name == row.type.displayName)) {
-      const props = {...row.props};
-      props.key = preservedProps.key;
-      props.onPress = preservedProps.onPress;
-      const {children} = row.props;
-      switch (row.type.displayName) {
-        case 'TouchableHighlight': {
-          return (
-            <TouchableHighlight {...props}>
-              {children}
-            </TouchableHighlight>
-          );
-        }
-        case 'TouchableOpacity': {
-          return (
-            <TouchableOpacity {...props}>
-              {children}
-            </TouchableOpacity>
-          );
-        }
-        case 'TouchableWithoutFeedback': {
-          return (
-            <TouchableWithoutFeedback {...props}>
-              {children}
-            </TouchableWithoutFeedback>
-          );
-        }
-        case 'TouchableNativeFeedback': {
-          return (
-            <TouchableNativeFeedback {...props}>
-              {children}
-            </TouchableNativeFeedback>
-          );
-        }
-        default:
-          break;
-      }
-    }
-    return (
-      <TouchableHighlight {...preservedProps}>
-        {row}
-      </TouchableHighlight>
-    );
+    const highlighted =  index === selectedIndex;
+      return (
+      <TouchableOpacity  onPress={()=>this._onRowPress(item, index)} >
+              <Text  
+                numberOfLines={1}
+                ellipsizeMode={'tail'}
+                style={[
+                  styles.rowText,
+                  dropdownTextStyle,
+                  highlighted && styles.highlightedRowText,
+                  highlighted && styles.highlightedRow
+                ]}
+                >
+                  {item}
+              </Text>
+      </TouchableOpacity>
+     ) 
   };
 
-  _onRowPress(rowData, sectionID, rowID, highlightRow) {
-    const {onSelect, renderButtonText, onDropdownWillHide} = this.props;
-    if (!onSelect || onSelect(rowID, rowData) !== false) {
-      highlightRow(sectionID, rowID);
-      const value = renderButtonText && renderButtonText(rowData) || rowData.toString();
+  _onRowPress( value, rowID) {
+    const {onSelect, onDropdownWillHide} = this.props;
+      onSelect(rowID)
       this._nextValue = value;
       this._nextIndex = rowID;
       this.setState({
         buttonText: value,
         selectedIndex: rowID
-      });
-    }
+      },()=> onSelect(rowID));
+
     if (!onDropdownWillHide || onDropdownWillHide() !== false) {
       this.setState({
         showDropdown: false
@@ -436,7 +380,11 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center'
   },
   highlightedRowText: {
-    color: 'black'
+    color: '#D7AF9B'
+  },
+  highlightedRow: {
+    flex:1,
+    backgroundColor: '#204068'
   },
   separator: {
     height: StyleSheet.hairlineWidth,
